@@ -1,1 +1,6 @@
 
+title: Data science project
+#logo: /assets/img/headshot_circle.png
+description: this is a draft im playing around with
+shhow_downloads: true 
+theme: jekyll-theme-minimal
