@@ -4,3 +4,23 @@ title: Data science project
 description: this is a draft im playing around with
 shhow_downloads: true 
 theme: jekyll-theme-minimal
+
+import numpy as np # linear algebra
+import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
+
+
+import os
+for dirname, _, filenames in os.walk('/kaggle/input'):
+    for filename in filenames:
+        print(os.path.join(dirname, filename))
+
+        import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import*
+import tensorflow as tf
+from tensorflow import keras
+
+df = pd.read_csv("/kaggle/input/mental-health-dataset/Mental Health Dataset.csv")
+df.head()
