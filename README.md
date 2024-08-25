@@ -10,4 +10,3 @@ My portfolio page is to show what I have learned during my apprentiship.
 
 ## Access My Portfolio
 
-You can access my portfolio website by visiting [Portfolio Website](https://axjas.github.io/). 
