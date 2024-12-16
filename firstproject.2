@@ -1,0 +1,222 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyNR69No+lP4cNxeSnI8Jl+Y",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/u5ername-create/data.s/blob/main/firstproject.2\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import pandas as pd\n",
+        "!pip install vaderSentiment\n",
+        "from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer\n",
+        "analyzer = SentimentIntensityAnalyzer()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "HCih47Chi-5P",
+        "outputId": "32067618-805a-485b-afcf-992b49fb58bd"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Collecting vaderSentiment\n",
+            "  Downloading vaderSentiment-3.3.2-py2.py3-none-any.whl.metadata (572 bytes)\n",
+            "Requirement already satisfied: requests in /usr/local/lib/python3.10/dist-packages (from vaderSentiment) (2.32.3)\n",
+            "Requirement already satisfied: charset-normalizer<4,>=2 in /usr/local/lib/python3.10/dist-packages (from requests->vaderSentiment) (3.4.0)\n",
+            "Requirement already satisfied: idna<4,>=2.5 in /usr/local/lib/python3.10/dist-packages (from requests->vaderSentiment) (3.10)\n",
+            "Requirement already satisfied: urllib3<3,>=1.21.1 in /usr/local/lib/python3.10/dist-packages (from requests->vaderSentiment) (2.2.3)\n",
+            "Requirement already satisfied: certifi>=2017.4.17 in /usr/local/lib/python3.10/dist-packages (from requests->vaderSentiment) (2024.8.30)\n",
+            "Downloading vaderSentiment-3.3.2-py2.py3-none-any.whl (125 kB)\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m126.0/126.0 kB\u001b[0m \u001b[31m1.9 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hInstalling collected packages: vaderSentiment\n",
+            "Successfully installed vaderSentiment-3.3.2\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "this is just to make sure i have the correct lybraries for analysing survey data"
+      ],
+      "metadata": {
+        "id": "O4CgfriHjGjT"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "file_path = r'/content/comments.csv'\n",
+        "df = pd.read_csv(file_path)"
+      ],
+      "metadata": {
+        "id": "uoueLINjovSm"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "theme_keywords = {\n",
+        "    'Wellbeing': ['stress', 'stressed', 'anxiety', 'wellbeing' 'demoralising'],\n",
+        "    'Workloads': ['targets', 'footfall', 'workloads', 'understaffed', 'resourcing'],\n",
+        "    'leadership': ['leader', 'manager', 'ceo', 'senior', 'supported'],\n",
+        "    'Hybrid': ['hybrid'],\n",
+        "    'financial benefit': ['salary', 'pay', 'healthcare'],\n",
+        "    'workenvironment': ['environment', 'team', 'speak up', 'negative', 'accountability'],\n",
+        "}"
+      ],
+      "metadata": {
+        "id": "mPakGXryqZhT"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "the dictrionary above provides the themes that i want to be assigned to each comment (this is probably the most time consuming of the code) the function bellow is what will detect the themes based on the keywords, it will also deal missing data"
+      ],
+      "metadata": {
+        "id": "6Ul_fEaRqe6i"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def detect_theme(comments):\n",
+        "    if pd.isna(comments):\n",
+        "        return None # Handle missing comments\n",
+        "    for theme, keywords in theme_keywords.items():\n",
+        "        if any(keyword.lower() in comments.lower() for keyword in keywords):\n",
+        "            return theme\n",
+        "    return 'Other' # Default if no theme is detected"
+      ],
+      "metadata": {
+        "id": "xExxVLTWq4nc"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def get_sentiment_veder(comments):\n",
+        "    if pd.isna(comments):\n",
+        "        return None\n",
+        "    scores = analyzer.polarity_scores(comments)\n",
+        "    compound_score = scores['compound']\n",
+        "\n",
+        "    if compound_score >= 0.05:\n",
+        "        return \"Positive\"\n",
+        "    elif compound_score <= -0.05:\n",
+        "        return \"Negative\"\n",
+        "    else:\n",
+        "        return \"Neutral\""
+      ],
+      "metadata": {
+        "id": "8a-mO6ygrDfQ"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "df['sentiment_label'] = df['comments'].apply(get_sentiment_veder) # For sentiment\n",
+        "df['theme'] = df['comments'].apply(detect_theme) # For theme detection"
+      ],
+      "metadata": {
+        "id": "YL0uCVM2r7it"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "due to the nature of language and deeper understanding on what people are saying i also want to add a function that will classify the sentiment as positive, negative and nuteral"
+      ],
+      "metadata": {
+        "id": "p035-KEorHYK"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "output_file = 'sentiment_analysis_with_themes.xlsx'\n",
+        "df.to_excel(output_file, index=False)\n",
+        "\n",
+        "# Print the DataFrame to verify\n",
+        "print(df.head())\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "QljBi6zOrivo",
+        "outputId": "4987df70-ee58-431a-c36c-ea01daefdac8"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "                                            comments sentiment_label  \\\n",
+            "0                              Happy with leadership        Positive   \n",
+            "1               I am supported to perform at my best        Positive   \n",
+            "2  I find our wider team to be ran in a very toxi...         Neutral   \n",
+            "3  I am really proud to be supported in the devel...        Positive   \n",
+            "4  Forcing people to an office with hybrid is awf...        Negative   \n",
+            "\n",
+            "             theme  \n",
+            "0       leadership  \n",
+            "1       leadership  \n",
+            "2  workenvironment  \n",
+            "3       leadership  \n",
+            "4           Hybrid  \n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "the reson i want an excel sheet at the end is to make it easier to create visuals for reports or if there needs to be additional data added at a later stage"
+      ],
+      "metadata": {
+        "id": "X4_6PgTIser2"
+      }
+    }
+  ]
+}
